@@ -1,0 +1,70 @@
+# ======================
+# Python
+# ======================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# ======================
+# Virtual Environment
+# ======================
+venv/
+.venv/
+env/
+ENV/
+
+# ======================
+# Environment Variables
+# ======================
+.env
+.env.*
+*.env
+
+# ======================
+# FastAPI / Uvicorn
+# ======================
+*.log
+logs/
+uvicorn.log
+
+# ======================
+# Database
+# ======================
+*.db
+*.sqlite3
+
+# PostgreSQL dumps
+*.sql
+*.dump
+
+# ======================
+# Migrations
+# ======================
+alembic/versions/__pycache__/
+
+# ======================
+# VS Code
+# ======================
+.vscode/
+
+# ======================
+# OS Files
+# ======================
+.DS_Store
+Thumbs.db
+
+# ======================
+# Testing
+# ======================
+.pytest_cache/
+.coverage
+htmlcov/
+
+# ======================
+# Build / Cache
+# ======================
+dist/
+build/
+.eggs/
+*.egg-info/
