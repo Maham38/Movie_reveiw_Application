@@ -1,71 +1,175 @@
-﻿# Movie_reveiw_Application
- 1.	Project Scope and Goals
-The Movie Review Application is a full stack service designed to manage users, movie information, and user-submitted reviews.
-Primary Goal: 
-Provide secure, high-performance API endpoints for a decoupled frontend application to perform user authentication (sign-up/login), movie creation, and review CRUD operations.
-           Key Features:
-o	User Management: Secure sign-up and login using JWT for authentication.
-o	Movie Catalog: CRUD operations for movies, including automatic average rating calculation.
-o	Review System: Users can submit reviews (1-5 star ratings) for movies.
-o	Engagement: Users can like and report reviews.
-o	Security: Password hashing via sha256_crypt (to bypass known bcrypt environment issues) and PostgreSQL for persistent data storage.
-2.	Key Functionalities
-The application manages four primary areas:
-User Authentication & Security
-•	Sign-Up/Login: Allows users to register and log in securely.
-•	Password Hashing: Uses passlib with the secure sha256_crypt algorithm to safely store passwords in the database.
-•	Authentication: Uses JWT (JSON Web Tokens) for stateless authentication. After login, a token is issued, which is required to access protected routes like posting a review or creating a movie.
-Movie Catalog Management
-•	CRUD Operations: Provides endpoints to Create, Read (list all or by ID) movie entries.
-•	Automated Rating: Automatically calculates and updates the average_rating for a movie every time a new review is submitted, ensuring ratings are always current.
-Review & Rating System
-•	Submission: Users can submit reviews that include content and a 1-5 star rating for any movie.
-•	Data Association: Reviews are automatically linked to the user who wrote them and the movie they are reviewing (Foreign Key relationships).
-User Engagement & Moderation
-•	Likes: Users can "like" a review, with the total number of likes tracked (likes_count).
-•	Reporting: Users can "report" inappropriate reviews. The system tracks the number of reports (reports_count) and automatically sets an is_flagged status on a review if it reaches a predefined report threshold (e.g., 3 reports).
-3.	Data Design (Database Schema)
-The application uses a PostgreSQL database structured around five main entities.
-Entity Relationship Diagram (ERD)
-The relational schema is designed to efficiently link users, movies, and their associated reviews, likes, and reports.
+🎬 Movie Review Application
+📌 Project Overview
+
+The Movie Review Application is a full-stack backend service designed to manage users, movies, and user-submitted reviews.
+It exposes secure, high-performance REST APIs that can be consumed by a decoupled frontend (React, Vue, or mobile apps).
+
+🎯 Primary Goal
+
+Provide a secure, scalable API that supports:
+
+🔐 User authentication (Sign-up & Login)
+
+🎞️ Movie catalog management
+
+⭐ Review creation & moderation
+
+👍 User engagement (likes & reports)
+
+✨ Key Features
+👤 User Management
+
+Secure user registration and login
+
+JWT-based authentication & authorization
+
+🎬 Movie Catalog
+
+Create and retrieve movie records
+
+Automatic average rating calculation
+
+⭐ Review System
+
+Submit reviews with 1–5 star ratings
+
+Reviews linked to users & movies
+
+🤝 User Engagement
+
+Like / unlike reviews
+
+Report inappropriate reviews
+
+🔒 Security
+
+Password hashing using sha256_crypt (Passlib)
+
+Stateless authentication using JWT
+
+PostgreSQL for persistent storage
+
+🧩 Core Functionalities
+1️⃣ User Authentication & Security
+
+Sign-Up / Login
+
+Users register with username, email, password
+
+Login returns a JWT access token
+
+Password Hashing
+
+Passwords are hashed using Passlib (sha256_crypt)
+
+JWT Authentication
+
+Tokens required for protected routes:
+
+Creating reviews
+
+Liking / reporting reviews
+
+2️⃣ Movie Catalog Management
+
+CRUD Operations
+
+Create and retrieve movie entries
+
+Automated Ratings
+
+average_rating updates automatically when new reviews are added
+
+3️⃣ Review & Rating System
+
+Review Submission
+
+Authenticated users submit:
+
+Review content
+
+Rating (1–5)
+
+Data Relationships
+
+Reviews linked using foreign keys:
+
+user_id
+
+movie_id
+
+4️⃣ User Engagement & Moderation
+
+Likes
+
+Users can like or unlike reviews
+
+Total likes tracked per review
+
+Reports
+
+Users report inappropriate reviews
+
+Reviews flagged automatically:
+
+is_flagged = true
+
+After reaching a report threshold (e.g., 3 reports)
+
+🗄️ Data Design (Database Schema)
+
+The application uses PostgreSQL with five core entities.
+
 Entity	Description	Key Fields	Relationships
-Users	Application users	id, username, email, hashed_password	One-to-Many with reviews, review_likes, review_reports
-Movies	Movie catalog	id, title, release_year, average_rating	One-to-Many with reviews
-Reviews	User-submitted ratings	id, content, rating (1-5), user_id (FK), movie_id (FK)	Many-to-One with users and movies
-review_likes	User engagement	id, user_id (FK), review_id (FK)	Tracks which user liked which review
-review_reports	Moderation flags	id, user_id (FK), review_id (FK), reason	Used for moderation (auto-flags if reports $\geq 3$)
+Users	Application users	id, username, email, hashed_password	One-to-Many with Reviews, Likes, Reports
+Movies	Movie catalog	id, title, release_year, average_rating	One-to-Many with Reviews
+Reviews	User reviews	id, content, rating, user_id, movie_id	Many-to-One with Users & Movies
+ReviewLikes	Review engagement	id, user_id, review_id	Tracks which user liked which review
+ReviewReports	Review moderation	id, user_id, review_id, reason	Used to flag inappropriate content
+🌐 REST API Design
 
-4.	REST API Design
-The API is structured using standard RESTful conventions, utilizing JWT Bearer tokens for authenticated endpoints.
-Resource	HTTP Method	Endpoint	Description	Authentication	Response Model
-Auth	POST	/signup	Registers a new user.	None	UserResponse
-Auth	POST	/login	Authenticates a user and returns a JWT token.	None	Token
-User	GET	/me	Retrieves the profile of the authenticated user.	Bearer Token	UserResponse
-Movies	POST	/movies	Creates a new movie entry in the catalog.	Bearer Token	MovieResponse
-Movies	GET	/movies	Retrieves a list of all movies.	None	List[MovieResponse]
-Movies	GET	/movies/{id}	Retrieves a single movie by ID.	None	MovieResponse
-Reviews	POST	/reviews	Submits a new review for a movie.	Bearer Token	ReviewResponse
-Reviews	GET	/movies/{id}/reviews	Retrieves all reviews for a specific movie.	None	List[ReviewResponse]
-Likes	POST	/reviews/{id}/like	Toggles a like/unlike on a review.	Bearer Token	204 No Content
-Reports	POST	/reviews/{id}/report	Reports a review for moderation.	Bearer Token	204 No Content
+The API follows RESTful conventions and uses JWT Bearer Authentication.
 
-5.	Development Details and Environment
-Technology Stack
-•	Framework: FastAPI (Python), Bootstrap
-•	Database: PostgreSQL
-•	ORM: SQLAlchemy
-•	Authentication: JWT (JSON Web Tokens)
-Environmental Fixes Implemented
-During development, the following critical environment errors were resolved:
-1.	Database Connection Hang: Fixed by correcting the port number in database.py from the incorrect fallback (5434) to the confirmed running port (5432).
-2.	CORS Errors: Resolved by ensuring the CORSMiddleware was correctly configured with allow_methods=["*"] to handle pre-flight OPTIONS requests.
+Resource	Method	Endpoint	Description	Auth	Response
+Auth	POST	/signup	Register a new user	❌	UserResponse
+Auth	POST	/login	Authenticate & return JWT	❌	Token
+User	GET	/users/me	Get current user profile	✅	UserResponse
+Movies	POST	/movies	Create a new movie	✅	MovieResponse
+Movies	GET	/movies	Get all movies	❌	List[MovieResponse]
+Movies	GET	/movies/{id}	Get movie by ID	❌	MovieResponse
+Reviews	POST	/reviews	Submit a review	✅	ReviewResponse
+Reviews	GET	/movies/{id}/reviews	Get reviews for a movie	❌	List[ReviewResponse]
+Likes	POST	/reviews/{id}/like	Like / unlike a review	✅	204 No Content
+Reports	POST	/reviews/{id}/report	Report a review	✅	204 No Content
+⚙️ Development & Environment
+🧰 Technology Stack
 
- 
- 
- 
- 
- 
+Backend: FastAPI (Python)
+
+Database: PostgreSQL
+
+ORM: SQLAlchemy
+
+Authentication: JWT (JSON Web Tokens)
+
+Frontend (Optional): Bootstrap / Any SPA Framework
+
+🛠️ Environment Fixes & Stability Improvements
+🔧 Database Connection
+
+Fixed PostgreSQL fallback port
+5434 → 5432
+
+🌍 CORS Configuration
+
+Enabled:
+
+allow_methods=["*"]
 
 
+Ensures proper handling of OPTIONS preflight requests
 
+👤 Authors
 
+Maham Maryam
+Saira Ahmed
